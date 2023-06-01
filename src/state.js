@@ -1,9 +1,9 @@
 export default () => {
   const state = {
-    processState: 'filling',
+    processState: 'fillling',
     processError: null,
     error: null,
-    feeds: ['https://buzzfeed.com/world.xml'],
+    feeds: [],
     posts: [],
   };
 
