@@ -1,8 +1,8 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable import/no-extraneous-dependencies */
 import * as _ from 'lodash';
 
 export default (elements, i18nextInstance) => {
-
   const renderErrorHint = (error) => {
     let feedbackElement = elements.example.nextElementSibling;
 

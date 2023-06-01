@@ -1,9 +1,11 @@
+/* eslint-disable no-shadow */
+/* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable max-len */
 import './styles.scss';
 import 'bootstrap';
 import axios from 'axios';
 import * as yup from 'yup';
-import _, { result } from 'lodash';
+import * as _ from 'lodash';
 import onChange from 'on-change';
 import i18next from 'i18next';
 import initState from './state';
@@ -57,8 +59,6 @@ const parseData = async (link) => {
 const getSchema = (i8n, initialState) => yup.object({
   url: yup.string().url(i8n.t('error.url')).required().notOneOf(initialState.feeds.reduce((acc, feed) => [...acc, feed.link], []), i8n.t('error.notOneOf')),
 });
-
-// .notOneOf(feeds.reduce((feed) => feed.link, []), i8n.t('error.notOneOf')
 
 const app = async () => {
   const elements = {
