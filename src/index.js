@@ -22,18 +22,18 @@ const getAxiosResponse = (url) => {
   return axios.get(preparedURL);
 };
 
-const parseData = async (link) => {
-  const response = await getAxiosResponse(link);
+const parseData = (data) => {
   const domParser = new DOMParser();
-  const dataDOM = domParser.parseFromString(response.data.contents, 'application/xml');
+  const dataDOM = domParser.parseFromString(data.contents, 'application/xml');
 
   const title = dataDOM.querySelector('title');
   const description = dataDOM.querySelector('description');
   const feedId = _.uniqueId();
+
   const feedData = {
     title: title.textContent,
-    description: description.textContent,
-    link,
+    description: '' ?? description.textContent,
+    link: data.status.url,
     feedId,
   };
 
@@ -64,7 +64,7 @@ const app = async () => {
   const elements = {
     form: document.querySelector('form'),
     input: document.querySelector('input'),
-    button: document.querySelector('button'),
+    button: document.querySelector('button[type="submit"]'),
     example: document.querySelector('.text-muted'),
     feeds: document.querySelector('.feeds'),
     posts: document.querySelector('.posts'),
@@ -76,48 +76,66 @@ const app = async () => {
   };
 
   const initialState = initState();
-
   const i18nextInstance = i18next.createInstance();
-  await i18nextInstance.init({
+
+  i18nextInstance.init({
     lng: 'ru',
     resources,
-  });
+  }).then(() => {
+    const render = initView(elements, i18nextInstance);
+    const state = onChange(initialState, render);
 
-  const render = initView(elements, i18nextInstance);
-  const state = onChange(initialState, render);
-
-  const validate = (field, initialState) => {
-    try {
+    const validate = (field, initialState) => {
       const schema = getSchema(i18nextInstance, initialState);
-      schema.validateSync(field);
-      return {};
-    } catch (e) {
-      console.log(e);
-      return e;
-    }
-  };
+      return schema.validate(field);
+    };
 
-  elements.form.addEventListener('submit', async (event) => {
-    event.preventDefault();
+    const setTimer = (feedData) => {
+      const { link } = feedData;
+      const DELAY = 5000;
 
-    const inputValue = elements.input.value.trim();
-    state.error = validate({ url: inputValue }, initialState);
+      let timerId = setTimeout(function updateFeeds() {
+        getAxiosResponse(link).then((response) => {
+          const [, postsData] = parseData(response.data);
+          postsData.forEach((post) => {
+            if (!_.find(state.posts, { link: post.link })) {
+              console.log('я добавился!!');
+              console.log(post);
+              state.posts.push(post);
+            };
+          });
+          timerId = setTimeout(updateFeeds, DELAY);
+        });
+      }, DELAY);
+    };
 
-    if (!_.isEmpty(state.error)) return;
-    state.processState = 'sending';
+    elements.form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const inputValue = elements.input.value.trim();
 
-    try {
-      const [feedData, postsData] = await parseData(inputValue);
-      state.feeds.push(feedData);
-      state.posts.push(postsData);
+      state.processState = 'sending';
 
-      state.processState = 'sent';
-    } catch (err) {
-      console.log(err);
-      state.form.processState = 'error';
-      state.form.processError = i18nextInstance.t('error.network');
-      throw err;
-    }
+      validate({ url: inputValue }, initialState)
+        .then(() => {
+          state.error = {};
+          getAxiosResponse(inputValue).then((response) => {
+            const [feedData, postsData] = parseData(response.data);
+            state.feeds.push(feedData);
+            state.posts = [...state.posts, ...postsData];
+            state.processState = 'sent';
+            setTimer(feedData);
+          }).catch((err) => {
+            console.log(err);
+            state.processState = 'error';
+            state.processError = i18nextInstance.t('error.network');
+            throw err;
+          });
+        }).catch((err) => {
+          state.error = err;
+          state.processState = 'filling';
+          console.log(err);
+        });
+    });
   });
 };
 

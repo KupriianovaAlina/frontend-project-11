@@ -1,6 +1,6 @@
 export default () => {
   const state = {
-    processState: 'fillling',
+    processState: 'filling',
     processError: null,
     error: null,
     feeds: [],

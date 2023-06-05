@@ -33,8 +33,13 @@ export default (elements, i18nextInstance) => {
 
   const handleProcessState = (processState) => {
     switch (processState) {
+      case 'filling':
+        elements.button.disabled = false;
+        break;
+
       case 'sending':
         elements.button.disabled = true;
+        console.log('тут должна выключиться кнопка');
         break;
 
       case 'sent':
@@ -108,7 +113,7 @@ export default (elements, i18nextInstance) => {
       elements.posts.append(container);
     }
 
-    const [newPosts] = _.difference(value, prevValue);
+    const newPosts = _.difference(value, prevValue);
     const postsList = elements.posts.querySelector('ul');
 
     newPosts.forEach((post) => {
@@ -144,6 +149,7 @@ export default (elements, i18nextInstance) => {
         renderErrorHint(value);
         break;
       case 'processState':
+      case 'processError':
         handleProcessState(value);
         break;
       case 'feeds':
@@ -153,7 +159,7 @@ export default (elements, i18nextInstance) => {
         renderPosts(path, value, prevValue);
         break;
       default:
-        throw new Error('Something went wrong in render');
+        throw new Error(`Something went wrong in render, path: ${path}`);
     }
   };
 
