@@ -85,6 +85,10 @@ const app = async () => {
     const render = initView(elements, i18nextInstance);
     const state = onChange(initialState, render);
 
+    elements.modal.addEventListener('shown.bs.modal', (e) => {
+      if (!state.openedPosts.includes(e.target.dataset.postId)) state.openedPosts.push(e.target.dataset.postId);
+    });
+
     const validate = (field) => {
       const feedLinks = state.feeds.reduce((acc, feed) => [...acc, feed.link], []);
       const schema = getSchema(i18nextInstance, feedLinks);

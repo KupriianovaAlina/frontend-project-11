@@ -106,15 +106,15 @@ export default (elements, i18nextInstance) => {
     elements.modalTitle.textContent = post.title;
     elements.modalBody.textContent = post.description;
     elements.modalLink.href = post.link;
+    elements.modal.dataset.postId = post.postId;
     elements.modalCloseButton.disabled = false;
   };
 
-  // const makePostOpened = (value, prevValue) => {
-  // };
-
-  const handlePostClick = (post) => {
-    openModal(post);
-    // state.openedPosts.append(post); ???
+  const makePostOpened = (value, prevValue) => {
+    const [postId] = _.difference(value, prevValue);
+    const justOpenedPost = elements.posts.querySelector(`[data-id='${postId}'`);
+    justOpenedPost.classList.remove('fw-bold');
+    justOpenedPost.classList.add('fw-normal');
   };
 
   const renderPosts = (path, value, prevValue) => {
@@ -128,7 +128,7 @@ export default (elements, i18nextInstance) => {
 
     newPosts.forEach((post) => {
       const postEl = document.createElement('li');
-      postEl.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0', 'fw-bold');
+      postEl.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
 
       const link = document.createElement('a');
       link.classList.add('fw-bold');
@@ -146,7 +146,7 @@ export default (elements, i18nextInstance) => {
       button.dataset.bsToggle = 'modal';
       button.dataset.bsTarget = '#modal';
       button.textContent = 'Просмотр';
-      button.addEventListener('click', handlePostClick(post));
+      button.addEventListener('click', openModal(post));
       postEl.append(button);
 
       postsList.append(postEl);
@@ -164,9 +164,9 @@ export default (elements, i18nextInstance) => {
       case 'feeds':
         renderFeed(path, value, prevValue);
         break;
-      // case 'openedPosts':
-      //   makePostOpened(value, prevValue);
-      //   break;
+      case 'openedPosts':
+        makePostOpened(value, prevValue);
+        break;
       case 'posts':
         renderPosts(path, value, prevValue);
         break;
