@@ -85,7 +85,7 @@ const app = async () => {
     const render = initView(elements, i18nextInstance);
     const state = onChange(initialState, render);
 
-    const validate = (field, state) => {
+    const validate = (field) => {
       const feedLinks = state.feeds.reduce((acc, feed) => [...acc, feed.link], []);
       const schema = getSchema(i18nextInstance, feedLinks);
       return schema.validate(field);
@@ -112,7 +112,7 @@ const app = async () => {
 
       state.processState = 'sending';
 
-      validate({ url: inputValue }, initialState)
+      validate({ url: inputValue })
         .then(() => {
           state.error = {};
           getAxiosResponse(inputValue).then((response) => {
@@ -123,7 +123,6 @@ const app = async () => {
             setTimer(feedData);
           }).catch((err) => {
             state.processState = 'error';
-            state.processError = i18nextInstance.t('error.network');
             throw err;
           });
         }).catch((err) => {

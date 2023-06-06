@@ -46,6 +46,10 @@ export default (elements, i18nextInstance) => {
         elements.button.disabled = false;
         break;
 
+      case 'error':
+        console.log('Oops, something wrong with network. Try again!');
+        break;
+
       default:
         throw new Error(`Unknown process state: ${processState}`);
     }
@@ -155,7 +159,6 @@ export default (elements, i18nextInstance) => {
         renderErrorHint(value);
         break;
       case 'processState':
-      case 'processError':
         handleProcessState(value);
         break;
       case 'feeds':
