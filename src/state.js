@@ -5,6 +5,7 @@ export default () => {
     error: null,
     feeds: [],
     posts: [],
+    openedPosts: [],
   };
 
   return state;

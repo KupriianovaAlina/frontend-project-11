@@ -1,5 +1,3 @@
-/* eslint-disable no-param-reassign */
-/* eslint-disable import/no-extraneous-dependencies */
 import * as _ from 'lodash';
 
 export default (elements, i18nextInstance) => {
@@ -39,13 +37,13 @@ export default (elements, i18nextInstance) => {
 
       case 'sending':
         elements.button.disabled = true;
-        console.log('тут должна выключиться кнопка');
         break;
 
       case 'sent':
         elements.form.reset();
         elements.input.focus();
         renderSuccesHint();
+        elements.button.disabled = false;
         break;
 
       default:
@@ -107,6 +105,14 @@ export default (elements, i18nextInstance) => {
     elements.modalCloseButton.disabled = false;
   };
 
+  // const makePostOpened = (value, prevValue) => {
+  // };
+
+  const handlePostClick = (post) => {
+    openModal(post);
+    // state.openedPosts.append(post); ???
+  };
+
   const renderPosts = (path, value, prevValue) => {
     if (_.isEmpty(prevValue)) {
       const container = renderInitialContainer(path);
@@ -118,7 +124,7 @@ export default (elements, i18nextInstance) => {
 
     newPosts.forEach((post) => {
       const postEl = document.createElement('li');
-      postEl.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
+      postEl.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0', 'fw-bold');
 
       const link = document.createElement('a');
       link.classList.add('fw-bold');
@@ -136,7 +142,7 @@ export default (elements, i18nextInstance) => {
       button.dataset.bsToggle = 'modal';
       button.dataset.bsTarget = '#modal';
       button.textContent = 'Просмотр';
-      button.addEventListener('click', openModal(post));
+      button.addEventListener('click', handlePostClick(post));
       postEl.append(button);
 
       postsList.append(postEl);
@@ -155,6 +161,9 @@ export default (elements, i18nextInstance) => {
       case 'feeds':
         renderFeed(path, value, prevValue);
         break;
+      // case 'openedPosts':
+      //   makePostOpened(value, prevValue);
+      //   break;
       case 'posts':
         renderPosts(path, value, prevValue);
         break;

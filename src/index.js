@@ -56,8 +56,8 @@ const parseData = (data) => {
   return [feedData, postsData];
 };
 
-const getSchema = (i8n, initialState) => yup.object({
-  url: yup.string().url(i8n.t('error.url')).required().notOneOf(initialState.feeds.reduce((acc, feed) => [...acc, feed.link], []), i8n.t('error.notOneOf')),
+const getSchema = (i8n, feedLinks) => yup.object({
+  url: yup.string().url(i8n.t('error.url')).required().notOneOf(feedLinks, i8n.t('error.notOneOf')),
 });
 
 const app = async () => {
@@ -85,8 +85,9 @@ const app = async () => {
     const render = initView(elements, i18nextInstance);
     const state = onChange(initialState, render);
 
-    const validate = (field, initialState) => {
-      const schema = getSchema(i18nextInstance, initialState);
+    const validate = (field, state) => {
+      const feedLinks = state.feeds.reduce((acc, feed) => [...acc, feed.link], []);
+      const schema = getSchema(i18nextInstance, feedLinks);
       return schema.validate(field);
     };
 
@@ -98,11 +99,7 @@ const app = async () => {
         getAxiosResponse(link).then((response) => {
           const [, postsData] = parseData(response.data);
           postsData.forEach((post) => {
-            if (!_.find(state.posts, { link: post.link })) {
-              console.log('я добавился!!');
-              console.log(post);
-              state.posts.push(post);
-            };
+            if (!_.find(state.posts, { link: post.link })) state.posts.push(post);
           });
           timerId = setTimeout(updateFeeds, DELAY);
         });
@@ -125,7 +122,6 @@ const app = async () => {
             state.processState = 'sent';
             setTimer(feedData);
           }).catch((err) => {
-            console.log(err);
             state.processState = 'error';
             state.processError = i18nextInstance.t('error.network');
             throw err;
@@ -133,7 +129,6 @@ const app = async () => {
         }).catch((err) => {
           state.error = err;
           state.processState = 'filling';
-          console.log(err);
         });
     });
   });
