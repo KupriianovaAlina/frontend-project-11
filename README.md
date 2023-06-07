@@ -1,6 +1,6 @@
 # 🚀 Welcome to my new awesome project!
 Ссылка на Vercel: 
-https://frontend-project-11-i5ldnvly8-kupriianovaalina.vercel.app/
+https://frontend-project-11-hazel-gamma.vercel.app/
 
 ### Hexlet tests and linter status:
 [![Actions Status](https://github.com/KupriianovaAlina/frontend-project-11/workflows/hexlet-check/badge.svg)](https://github.com/KupriianovaAlina/frontend-project-11/actions)
