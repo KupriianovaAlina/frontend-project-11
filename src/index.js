@@ -57,7 +57,7 @@ const parseData = (data) => {
 };
 
 const getSchema = (i8n, feedLinks) => yup.object({
-  url: yup.string().url(i8n.t('error.url')).required().notOneOf(feedLinks, i8n.t('error.notOneOf')),
+  url: yup.string().url(i8n.t('error.url')).required(i8n.t('error.notEmpty')).notOneOf(feedLinks, i8n.t('error.notOneOf')),
 });
 
 const app = async () => {
@@ -120,14 +120,16 @@ const app = async () => {
         .then(() => {
           state.error = {};
           getAxiosResponse(inputValue).then((response) => {
+            if (!response.data.status.content_type.includes('xml')) throw i18nextInstance.t('error.noRSS');
+
+            state.processState = 'sent';
             const [feedData, postsData] = parseData(response.data);
             state.feeds.push(feedData);
             state.posts = [...state.posts, ...postsData];
-            state.processState = 'sent';
             setTimer(feedData);
           }).catch((err) => {
-            state.processState = 'error';
-            throw err;
+            state.error = { message: err };
+            state.processState = 'filling';
           });
         }).catch((err) => {
           state.error = err;
