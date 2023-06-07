@@ -27,7 +27,7 @@ const parseData = (data) => {
   const dataDOM = domParser.parseFromString(data.contents, 'application/xml');
   const errorNode = dataDOM.querySelector('parsererror');
   if (errorNode) {
-    throw new Error('noRSS');
+    throw 'noRSS';
   }
 
   const title = dataDOM.querySelector('title');
@@ -130,7 +130,7 @@ const app = async () => {
             state.posts = [...state.posts, ...postsData];
             setTimer(feedData);
           }).catch((err) => {
-            state.error = (err.message === 'noRSS') ? { message: i18nextInstance.t('error.noRSS') } : { message: i18nextInstance.t('error.network') };
+            state.error = (err === 'noRSS') ? { message: i18nextInstance.t('error.noRSS') } : { message: i18nextInstance.t('error.network') };
             state.processState = 'filling';
           });
         }).catch((err) => {
