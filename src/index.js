@@ -128,7 +128,6 @@ const app = async () => {
             state.processState = 'sent';
             setTimer(feedData);
           }).catch((err) => {
-            console.log(err);
             state.error = (err.message === 'noRSS') ? { message: i18nextInstance.t('error.noRSS') } : { message: i18nextInstance.t('error.network') };
             state.processState = 'filling';
           });
