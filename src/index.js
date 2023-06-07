@@ -25,6 +25,10 @@ const getAxiosResponse = (url) => {
 const parseData = (data) => {
   const domParser = new DOMParser();
   const dataDOM = domParser.parseFromString(data.contents, 'application/xml');
+  const errorNode = dataDOM.querySelector('parsererror');
+  if (errorNode) {
+    throw new Error('noRSS');
+  }
 
   const title = dataDOM.querySelector('title');
   const description = dataDOM.querySelector('description');
@@ -100,12 +104,12 @@ const app = async () => {
       const DELAY = 5000;
 
       let timerId = setTimeout(function updateFeeds() {
+        timerId = setTimeout(updateFeeds, DELAY);
         getAxiosResponse(link).then((response) => {
           const [, postsData] = parseData(response.data);
           postsData.forEach((post) => {
             if (!_.find(state.posts, { link: post.link })) state.posts.push(post);
           });
-          timerId = setTimeout(updateFeeds, DELAY);
         });
       }, DELAY);
     };
@@ -120,15 +124,13 @@ const app = async () => {
         .then(() => {
           state.error = {};
           getAxiosResponse(inputValue).then((response) => {
-            if (!response.data.status.content_type.includes('xml')) throw i18nextInstance.t('error.noRSS');
-
             state.processState = 'sent';
             const [feedData, postsData] = parseData(response.data);
             state.feeds.push(feedData);
             state.posts = [...state.posts, ...postsData];
             setTimer(feedData);
           }).catch((err) => {
-            state.error = { message: err };
+            state.error = (err.message === 'noRSS') ? { message: i18nextInstance.t('error.noRSS') } : { message: i18nextInstance.t('error.network') };
             state.processState = 'filling';
           });
         }).catch((err) => {
