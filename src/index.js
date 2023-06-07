@@ -122,12 +122,13 @@ const app = async () => {
         .then(() => {
           state.error = {};
           getAxiosResponse(inputValue).then((response) => {
-            state.processState = 'sent';
             const [feedData, postsData] = parseData(response.data);
             state.feeds.push(feedData);
             state.posts = [...state.posts, ...postsData];
+            state.processState = 'sent';
             setTimer(feedData);
           }).catch((err) => {
+            console.log(err);
             state.error = (err.message === 'noRSS') ? { message: i18nextInstance.t('error.noRSS') } : { message: i18nextInstance.t('error.network') };
             state.processState = 'filling';
           });
