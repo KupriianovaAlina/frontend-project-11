@@ -4,6 +4,5 @@
 /test-results/
 /playwright-report/
 /playwright/.cache/
-/__fixtures__/
 /__tests__/
 playwright.config.js

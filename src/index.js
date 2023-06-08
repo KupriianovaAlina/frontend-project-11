@@ -105,7 +105,7 @@ const app = async () => {
             state.processState = 'sent';
             setTimer(feedData);
           }).catch((err) => {
-            state.error = (err.message === 'noRSS') ? { message: i18nextInstance.t('error.noRSS') } : { message: err.message };
+            state.error = (err.message === 'noRSS') ? { message: i18nextInstance.t('error.noRSS') } : { message: i18nextInstance.t('error.network') };
             state.processState = 'filling';
           });
         }).catch((err) => {
