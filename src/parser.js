@@ -1,3 +1,5 @@
+import * as _ from 'lodash';
+
 const parseData = (data, link, type = 'load') => {
   const domParser = new DOMParser();
   const dataDOM = domParser.parseFromString(data.contents, 'application/xml');
@@ -18,14 +20,14 @@ const parseData = (data, link, type = 'load') => {
   const posts = dataDOM.querySelectorAll('item');
   const postsData = [];
   posts.forEach((post) => {
-    const title = post.querySelector('title');
-    const description = post.querySelector('description');
-    const link = post.querySelector('link');
+    const postTitle = post.querySelector('title');
+    const postDescription = post.querySelector('description');
+    const postLink = post.querySelector('link');
     const postId = _.uniqueId();
     postsData.push({
-      title: title.textContent,
-      description: description.textContent,
-      link: link.textContent,
+      title: postTitle.textContent,
+      description: postDescription.textContent,
+      link: postLink.textContent,
       feedId,
       postId,
     });

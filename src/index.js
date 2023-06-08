@@ -78,6 +78,7 @@ const app = async () => {
       const { link } = feedData;
       const DELAY = 5000;
 
+      // eslint-disable-next-line no-unused-vars
       let timerId = setTimeout(function updateFeeds() {
         timerId = setTimeout(updateFeeds, DELAY);
         getAxiosResponse(link).then((response) => {

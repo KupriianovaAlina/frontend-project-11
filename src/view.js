@@ -58,12 +58,12 @@ export default (elements, i18nextInstance) => {
   const renderInitialContainer = (path) => {
     const text = (path === 'feeds') ? 'Фиды' : 'Посты';
 
-    const container = document.createElement('div');
-    container.classList.add('card', 'border');
+    const initialContainer = document.createElement('div');
+    initialContainer.classList.add('card', 'border');
 
     const cardBody = document.createElement('div');
     cardBody.classList.add('card-body');
-    container.append(cardBody);
+    initialContainer.append(cardBody);
 
     const title = document.createElement('h2');
     title.classList.add('card-title', 'h4');
@@ -72,15 +72,15 @@ export default (elements, i18nextInstance) => {
 
     const feedsList = document.createElement('ul');
     feedsList.classList.add('list-group', 'border-0', 'rounded-0');
-    container.append(feedsList);
+    initialContainer.append(feedsList);
 
-    return container;
+    return initialContainer;
   };
 
   const renderFeed = (path, value, prevValue) => {
     if (_.isEmpty(prevValue)) {
-      const container = renderInitialContainer(path);
-      elements.feeds.append(container);
+      const feedsContainer = renderInitialContainer(path);
+      elements.feeds.append(feedsContainer);
     }
 
     const [newFeed] = _.difference(value, prevValue);
