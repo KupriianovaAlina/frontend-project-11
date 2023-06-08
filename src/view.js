@@ -55,7 +55,7 @@ export default (elements, i18nextInstance) => {
     }
   };
 
-  const renderInitialContainer = (path) => {
+  const getInitialContainer = (path) => {
     const text = (path === 'feeds') ? 'Фиды' : 'Посты';
 
     const initialContainer = document.createElement('div');
@@ -79,7 +79,7 @@ export default (elements, i18nextInstance) => {
 
   const renderFeed = (path, value, prevValue) => {
     if (_.isEmpty(prevValue)) {
-      const feedsContainer = renderInitialContainer(path);
+      const feedsContainer = getInitialContainer(path);
       elements.feeds.append(feedsContainer);
     }
 
@@ -119,8 +119,8 @@ export default (elements, i18nextInstance) => {
 
   const renderPosts = (path, value, prevValue) => {
     if (_.isEmpty(prevValue)) {
-      const container = renderInitialContainer(path);
-      elements.posts.append(container);
+      const postsContainer = getInitialContainer(path);
+      elements.posts.append(postsContainer);
     }
 
     const newPosts = _.difference(value, prevValue);
