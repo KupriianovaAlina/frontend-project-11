@@ -10,7 +10,7 @@ const parseData = (data, link, type = 'load') => {
 
   const feedData = {
     title: title.textContent,
-    description: '' ?? description.textContent,
+    description: description.textContent,
     link,
     feedId,
   };
