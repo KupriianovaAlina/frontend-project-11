@@ -81,7 +81,7 @@ const app = async () => {
       let timerId = setTimeout(function updateFeeds() {
         timerId = setTimeout(updateFeeds, DELAY);
         getAxiosResponse(link).then((response) => {
-          const [, postsData] = parseData(response.data, 'update');
+          const [, postsData] = parseData(response.data, link, 'update');
           postsData.forEach((post) => {
             if (!_.find(state.posts, { link: post.link })) state.posts.push(post);
           });
@@ -99,7 +99,7 @@ const app = async () => {
         .then(() => {
           state.error = {};
           getAxiosResponse(inputValue).then((response) => {
-            const [feedData, postsData] = parseData(response.data);
+            const [feedData, postsData] = parseData(response.data, inputValue);
             state.feeds.push(feedData);
             state.posts = [...state.posts, ...postsData];
             state.processState = 'sent';

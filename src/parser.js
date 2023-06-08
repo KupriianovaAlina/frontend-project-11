@@ -1,4 +1,4 @@
-const parseData = (data, type = 'load') => {
+const parseData = (data, link, type = 'load') => {
   const domParser = new DOMParser();
   const dataDOM = domParser.parseFromString(data.contents, 'application/xml');
   const errorNode = dataDOM.querySelector('parsererror');
@@ -11,7 +11,7 @@ const parseData = (data, type = 'load') => {
   const feedData = {
     title: title.textContent,
     description: '' ?? description.textContent,
-    link: data.status.url,
+    link,
     feedId,
   };
 
