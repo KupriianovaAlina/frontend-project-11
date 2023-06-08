@@ -58,8 +58,8 @@ const parseData = (data, type = 'load') => {
   return [feedData, postsData];
 };
 
-const getSchema = (i8n, feedLinks) => yup.object({
-  url: yup.string().url(i8n.t('error.url')).required(i8n.t('error.notEmpty')).notOneOf(feedLinks, i8n.t('error.notOneOf')),
+const getSchema = (feedLinks) => yup.object({
+  url: yup.string().url().required().notOneOf(feedLinks),
 });
 
 const app = async () => {
@@ -84,6 +84,16 @@ const app = async () => {
     lng: 'ru',
     resources,
   }).then(() => {
+    yup.setLocale({
+      mixed: {
+        notOneOf: i18nextInstance.t('error.notOneOf'),
+      },
+      string: {
+        url: i18nextInstance.t('error.url'),
+        required: i18nextInstance.t('error.notEmpty'),
+      },
+    });
+
     const render = initView(elements, i18nextInstance);
     const state = onChange(initialState, render);
 
@@ -93,7 +103,7 @@ const app = async () => {
 
     const validate = (field) => {
       const feedLinks = state.feeds.reduce((acc, feed) => [...acc, feed.link], []);
-      const schema = getSchema(i18nextInstance, feedLinks);
+      const schema = getSchema(feedLinks);
       return schema.validate(field);
     };
 
