@@ -103,11 +103,11 @@ export default (elements, i18nextInstance) => {
   };
 
   const openModal = (post) => () => {
-    elements.modalTitle.textContent = post.title;
-    elements.modalBody.textContent = post.description;
-    elements.modalLink.href = post.link;
-    elements.modal.dataset.postId = post.postId;
-    elements.modalCloseButton.disabled = false;
+    elements.modal.title.textContent = post.title;
+    elements.modal.body.textContent = post.description;
+    elements.modal.link.href = post.link;
+    elements.modal.modal.dataset.postId = post.postId;
+    elements.modal.closeButton.disabled = false;
   };
 
   const makePostOpened = (value, prevValue) => {
