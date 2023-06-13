@@ -1,5 +1,3 @@
-import * as _ from 'lodash';
-
 const parseData = (data, link, type = 'load') => {
   const domParser = new DOMParser();
   const dataDOM = domParser.parseFromString(data.contents, 'application/xml');
