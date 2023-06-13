@@ -13,6 +13,19 @@ import initView from './view';
 import resources from './locales/index';
 import parseData from './parser';
 
+const addIds = (rowFeedData, rowPostsData) => {
+  const feedId = _.uniqueId();
+  rowFeedData.feedId = feedId;
+
+  rowPostsData.forEach((post) => {
+    const postId = _.uniqueId();
+    post.postId = postId;
+    post.feedId = feedId;
+  });
+
+  return [rowFeedData, rowPostsData];
+};
+
 const getAxiosResponse = (url) => {
   const allOriginsLink = 'https://allorigins.hexlet.app/get';
 
@@ -35,7 +48,7 @@ const app = async () => {
     example: document.querySelector('.text-muted'),
     feeds: document.querySelector('.feeds'),
     posts: document.querySelector('.posts'),
-    modal: {
+    modalElements: {
       modal: document.querySelector('.modal'),
       title: document.querySelector('.modal-title'),
       body: document.querySelector('.modal-body'),
@@ -64,8 +77,10 @@ const app = async () => {
     const render = initView(elements, i18nextInstance);
     const state = onChange(initialState, render);
 
-    elements.modal.modal.addEventListener('shown.bs.modal', (e) => {
-      if (!state.openedPosts.includes(e.target.dataset.postId)) state.openedPosts.push(e.target.dataset.postId);
+    elements.posts.addEventListener('click', (e) => {
+      // если нажатие было ни на кнопку или ссылку
+      if (!(e.target.tagName.toLowerCase() === 'a' || e.target.tagName.toLowerCase() === 'button')) return;
+      if (!state.openedPosts.includes(e.target.dataset.id)) state.openedPosts.push(e.target.dataset.id);
     });
 
     const validate = (field) => {
@@ -74,18 +89,30 @@ const app = async () => {
       return schema.validate(field);
     };
 
-    const setTimer = (feedData) => {
-      const { link } = feedData;
+    const setTimerForUpdate = () => {
       const DELAY = 5000;
 
       // eslint-disable-next-line no-unused-vars
       let timerId = setTimeout(function updateFeeds() {
-        timerId = setTimeout(updateFeeds, DELAY);
-        getAxiosResponse(link).then((response) => {
-          const [, postsData] = parseData(response.data, link, 'update');
-          postsData.forEach((post) => {
-            if (!_.find(state.posts, { link: post.link })) state.posts.push(post);
+        const promises = [];
+
+        state.feeds.forEach((feed) => {
+          promises.push(getAxiosResponse(feed.link));
+        });
+
+        const links = state.feeds.map((feed) => feed.link);
+
+        Promise.all(promises).then((response) => {
+          response.forEach((item) => {
+            const index = response.indexOf(item);
+            const link = links[index];
+            const [, postsData] = parseData(item.data, link, 'update');
+            postsData.forEach((post) => {
+              if (!_.find(state.posts, { link: post.link })) state.posts.push(post);
+            });
           });
+        }).finally(() => {
+          timerId = setTimeout(updateFeeds, DELAY);
         });
       }, DELAY);
     };
@@ -100,11 +127,17 @@ const app = async () => {
         .then(() => {
           state.error = {};
           getAxiosResponse(inputValue).then((response) => {
-            const [feedData, postsData] = parseData(response.data, inputValue);
+            const [rowFeedData, rowPostsData] = parseData(response.data, inputValue);
+            const [feedData, postsData] = addIds(rowFeedData, rowPostsData);
+
+            if (!state.isUpdating) {
+              state.isUpdating = true;
+              setTimerForUpdate();
+            }
+
             state.feeds.push(feedData);
             state.posts = [...state.posts, ...postsData];
             state.processState = 'sent';
-            setTimer(feedData);
           }).catch((err) => {
             state.error = (err.message === 'noRSS') ? { message: i18nextInstance.t('error.noRSS') } : { message: i18nextInstance.t('error.network') };
             state.processState = 'filling';

@@ -8,13 +8,13 @@ const parseData = (data, link, type = 'load') => {
 
   const title = dataDOM.querySelector('title');
   const description = dataDOM.querySelector('description');
-  const feedId = _.uniqueId();
+
+  const descriptionText = (description) ? description.textContent : '';
 
   const feedData = {
     title: title.textContent,
-    description: description.textContent,
+    description: descriptionText,
     link,
-    feedId,
   };
 
   const posts = dataDOM.querySelectorAll('item');
@@ -23,13 +23,10 @@ const parseData = (data, link, type = 'load') => {
     const postTitle = post.querySelector('title');
     const postDescription = post.querySelector('description');
     const postLink = post.querySelector('link');
-    const postId = _.uniqueId();
     postsData.push({
       title: postTitle.textContent,
       description: postDescription.textContent,
       link: postLink.textContent,
-      feedId,
-      postId,
     });
   });
 

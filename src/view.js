@@ -103,11 +103,11 @@ export default (elements, i18nextInstance) => {
   };
 
   const openModal = (post) => () => {
-    elements.modal.title.textContent = post.title;
-    elements.modal.body.textContent = post.description;
-    elements.modal.link.href = post.link;
-    elements.modal.modal.dataset.postId = post.postId;
-    elements.modal.closeButton.disabled = false;
+    elements.modalElements.title.textContent = post.title;
+    elements.modalElements.body.textContent = post.description;
+    elements.modalElements.link.href = post.link;
+    elements.modalElements.modal.dataset.postId = post.postId;
+    elements.modalElements.closeButton.disabled = false;
   };
 
   const makePostOpened = (value, prevValue) => {
@@ -169,6 +169,8 @@ export default (elements, i18nextInstance) => {
         break;
       case 'posts':
         renderPosts(path, value, prevValue);
+        break;
+      case 'isUpdating':
         break;
       default:
         throw new Error(`Something went wrong in render, path: ${path}`);
