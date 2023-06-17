@@ -78,7 +78,6 @@ const app = async () => {
     const state = onChange(initialState, render);
 
     elements.posts.addEventListener('click', (e) => {
-      // если нажатие было ни на кнопку или ссылку
       if (!(e.target.tagName.toLowerCase() === 'a' || e.target.tagName.toLowerCase() === 'button')) return;
       if (!state.openedPosts.includes(e.target.dataset.id)) state.openedPosts.push(e.target.dataset.id);
     });

@@ -4,12 +4,10 @@ export default (elements, i18nextInstance) => {
   const renderErrorHint = (error) => {
     let feedbackElement = elements.example.nextElementSibling;
 
-    // если есть контейнер ошибки или подсказки, удаляем его
     if (feedbackElement) {
       feedbackElement.remove();
     }
 
-    // если текущей ошибки нет, очищаем стили и выходим
     if (_.isEmpty(error)) {
       if (elements.input.classList.contains('is-invalid')) elements.input.classList.remove('is-invalid');
       return;
