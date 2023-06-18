@@ -6,7 +6,6 @@ export default () => {
     feeds: [],
     posts: [],
     openedPosts: [],
-    isUpdating: false,
   };
 
   return state;

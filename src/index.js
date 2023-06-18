@@ -88,33 +88,23 @@ const app = async () => {
       return schema.validate(field);
     };
 
-    const setTimerForUpdate = () => {
-      const DELAY = 5000;
+    const updateFeeds = () => {
+      const links = state.feeds.map((feed) => feed.link);
+      const promises = links.map((link) => getAxiosResponse(link));
 
-      // eslint-disable-next-line no-unused-vars
-      let timerId = setTimeout(function updateFeeds() {
-        const promises = [];
-
-        state.feeds.forEach((feed) => {
-          promises.push(getAxiosResponse(feed.link));
-        });
-
-        const links = state.feeds.map((feed) => feed.link);
-
-        Promise.all(promises).then((response) => {
-          response.forEach((item) => {
-            const index = response.indexOf(item);
-            const link = links[index];
-            const [, postsData] = parseData(item.data, link, 'update');
-            postsData.forEach((post) => {
-              if (!_.find(state.posts, { link: post.link })) state.posts.push(post);
-            });
+      Promise.all(promises).then((response) => {
+        response.forEach((item) => {
+          const index = response.indexOf(item);
+          const link = links[index];
+          const [, postsData] = parseData(item.data, link, 'update');
+          postsData.forEach((post) => {
+            if (!_.find(state.posts, { link: post.link })) state.posts.push(post);
           });
-        }).finally(() => {
-          timerId = setTimeout(updateFeeds, DELAY);
         });
-      }, DELAY);
+      }).finally(() => setTimeout(updateFeeds, 5000));
     };
+
+    updateFeeds();
 
     elements.form.addEventListener('submit', (event) => {
       event.preventDefault();
@@ -128,11 +118,6 @@ const app = async () => {
           getAxiosResponse(inputValue).then((response) => {
             const [rowFeedData, rowPostsData] = parseData(response.data, inputValue);
             const [feedData, postsData] = addIds(rowFeedData, rowPostsData);
-
-            if (!state.isUpdating) {
-              state.isUpdating = true;
-              setTimerForUpdate();
-            }
 
             state.feeds.push(feedData);
             state.posts = [...state.posts, ...postsData];
