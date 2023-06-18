@@ -123,7 +123,7 @@ const app = async () => {
             state.posts = [...state.posts, ...postsData];
             state.processState = 'sent';
           }).catch((err) => {
-            state.error = (err.message === 'noRSS') ? { message: i18nextInstance.t('error.noRSS') } : { message: i18nextInstance.t('error.network') };
+            state.error = (err?.isParserError) ? { message: i18nextInstance.t('error.noRSS') } : { message: i18nextInstance.t('error.network') };
             state.processState = 'filling';
           });
         }).catch((err) => {

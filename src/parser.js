@@ -3,8 +3,11 @@ const parseData = (data, link, type = 'load') => {
   const dataDOM = domParser.parseFromString(data.contents, 'application/xml');
   const parserError = dataDOM.querySelector('parsererror');
 
-  if (parserError && type === 'load') throw new Error('noRSS');
-
+  if (parserError && type === 'load') {
+    const error = new Error(parserError.textContent);
+    error.isParserError = true;
+    throw error;
+  }
 
   const title = dataDOM.querySelector('title');
   const description = dataDOM.querySelector('description');
